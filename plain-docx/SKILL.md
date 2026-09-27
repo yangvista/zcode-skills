@@ -11,7 +11,7 @@ description: 生成朴素、无装饰的中文 Word 纯文档（.docx）：无�
 
 | 项 | 规范 | docx-js 取值 |
 |---|---|---|
-| 章标题 | 三号黑体，居中，单倍行距，段前段后各 0.5 行 | `size: 32`，`eastAsia: "SimHei"`，居中，`spacing: { line: 240, before: 180, after: 180 }` |
+| 章标题 | 三号黑体，居左，单倍行距，段前段后各 0.5 行 | `size: 32`，`eastAsia: "SimHei"`，居左，`spacing: { line: 240, before: 180, after: 180 }` |
 | 节标题 | 四号黑体，居左，单倍行距，段前段后各 0.5 行 | `size: 28`，`eastAsia: "SimHei"`，居左，同上 spacing |
 | 正文 | 小四宋体，1.5 倍行距，段前段后 0 行 | `size: 24`，`eastAsia: "SimSun"`，`spacing: { line: 360, before: 0, after: 0 }`，首行缩进 `firstLine: 480`（规范未述，按中文惯例默认 2 字符；用户说不要缩进就去掉） |
 | 页码 | 五号宋体 | 页脚居中，`size: 21`，仅当前页码数字 |
@@ -50,10 +50,10 @@ description: 生成朴素、无装饰的中文 Word 纯文档（.docx）：无�
 const FONT = { ascii: "Times New Roman", eastAsia: "SimSun" };   // 正文
 const HFONT = { ascii: "Times New Roman", eastAsia: "SimHei" };  // 标题
 
-// 章标题（黑体自带粗度，不再加 bold）
+// 章标题（黑体自带粗度，不再加 bold；居左对齐）
 new Paragraph({
   heading: HeadingLevel.HEADING_1,
-  alignment: AlignmentType.CENTER,
+  alignment: AlignmentType.LEFT,
   spacing: { line: 240, before: 180, after: 180 },
   children: [new TextRun({ text, size: 32, color: "000000", font: HFONT })],
 });
