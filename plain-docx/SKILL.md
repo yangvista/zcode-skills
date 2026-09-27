@@ -44,6 +44,15 @@ description: 生成朴素、无装饰的中文 Word 纯文档（.docx）：无�
 
 `assets/template.js` 是完整可运行的样例（章标题、节标题、正文、三线表、页眉、页码俱全），照改即可，不要从零重写。
 
+## 加目录（用户要求时）
+
+默认不加目录。用户要求时按以下流程：
+
+1. 目录放独立节（正文前）：目录标题（黑体三号居中，不用 Heading 样式，否则目录会收录自己）+ `TableOfContents("目录", { hyperlink: true, headingStyleRange: "1-2" })` + 底部灰色斜体提示行；目录节有页眉、无页码；正文节设 `pageNumbers: { start: 1, formatType: NumberFormat.DECIMAL }` 重新起算页码。
+2. 生成后运行 documents 技能的 `add_toc_placeholders.py <docx> --auto` 插入目录条目与书签。
+3. 后处理 document.xml：目录条目段距压缩为段前 50 / 段后 25（脚本默认的 120/60 会让 20 条左右的目录溢出到第二页，形成近空白页）；页脚 instrText `PAGE` 改为 `PAGE \* arabic \* MERGEFORMAT`（WPS 兼容）；删除空的 `<w:pgNumType/>`。
+4. 目录缓存页码修正：转 PDF 后用书签（pypdf outline）定位每个标题的真实页，页脚页码 = PDF 页码 − 目录页数，回写对应 `PAGEREF` 条目的缓存数字——这样用户不更新域也能看到正确页码；后续编辑分页变化时右键「更新域」即可。
+
 ## 关键代码片段（速查）
 
 ```js
