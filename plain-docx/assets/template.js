@@ -50,17 +50,35 @@ function tableTitle(text) {
   });
 }
 
-// 黑白三线表：顶线、底线粗黑，表头下细黑线，无底纹无竖线
-// 非末行单元格段落加 keepNext，使整张表自动保持同页不拆（Word 标准技巧）
-function plainTable(headers, rows, widths) {
+// 黑白三线表：表题内嵌为表格首行（跨列无边框单元格，物理上不与表格分离——
+// LibreOffice 不认段落到表格的 keepNext）；顶线/底线用单元格边框实现；
+// 非末行单元格段落加 keepNext，使整张表自动保持同页不拆
+function plainTable(title, headers, rows, widths) {
   const NONE = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
   const thick = { style: BorderStyle.SINGLE, size: 8, color: "000000" };
   const thin = { style: BorderStyle.SINGLE, size: 4, color: "000000" };
+  const noSides = { left: NONE, right: NONE };
+  const titleRow = new TableRow({
+    cantSplit: true,
+    children: [new TableCell({
+      columnSpan: headers.length,
+      borders: { top: NONE, bottom: NONE, ...noSides },
+      margins: { top: 60, bottom: 60, left: 100, right: 100 },
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      children: [new Paragraph({
+        keepNext: true,
+        alignment: AlignmentType.CENTER,
+        spacing: { line: 240, before: 120, after: 60 },
+        children: [new TextRun({ text: title, size: 21, color: "000000", font: HFONT })],
+      })],
+    })],
+  });
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: { top: thick, bottom: thick, left: NONE, right: NONE,
+    borders: { top: NONE, bottom: NONE, left: NONE, right: NONE,
                insideHorizontal: NONE, insideVertical: NONE },
     rows: [
+      titleRow,
       new TableRow({
         tableHeader: true, cantSplit: true,
         children: headers.map((text, i) => new TableCell({
@@ -70,7 +88,7 @@ function plainTable(headers, rows, widths) {
             spacing: { line: 240 },
             children: [new TextRun({ text, size: 21, color: "000000", font: HFONT })],
           })],
-          borders: { bottom: thin },
+          borders: { top: thick, bottom: thin, ...noSides },
           margins: { top: 60, bottom: 60, left: 100, right: 100 },
           width: { size: widths[i], type: WidthType.PERCENTAGE },
         })),
@@ -83,6 +101,7 @@ function plainTable(headers, rows, widths) {
             spacing: { line: 240 },
             children: [new TextRun({ text, size: 21, color: "000000", font: FONT })],
           })],
+          borders: r === rows.length - 1 ? { bottom: thick, top: NONE, ...noSides } : { top: NONE, bottom: NONE, ...noSides },
           margins: { top: 60, bottom: 60, left: 100, right: 100 },
           width: { size: widths[i], type: WidthType.PERCENTAGE },
         })),
@@ -101,8 +120,8 @@ const children = [
   body("此处为正文内容。"),
   chapter("二、案例分析"),
   body("此处为正文内容。"),
-  tableTitle("表 1  示例数据表"),
   plainTable(
+    "表 1  示例数据表",
     ["指标", "2024 年", "2025 年", "变化"],
     [
       ["营业收入（万元）", "1,200", "1,410", "+17.5%"],
