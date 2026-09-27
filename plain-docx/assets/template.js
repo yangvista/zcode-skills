@@ -51,6 +51,7 @@ function tableTitle(text) {
 }
 
 // 黑白三线表：顶线、底线粗黑，表头下细黑线，无底纹无竖线
+// 非末行单元格段落加 keepNext，使整张表自动保持同页不拆（Word 标准技巧）
 function plainTable(headers, rows, widths) {
   const NONE = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
   const thick = { style: BorderStyle.SINGLE, size: 8, color: "000000" };
@@ -64,6 +65,7 @@ function plainTable(headers, rows, widths) {
         tableHeader: true, cantSplit: true,
         children: headers.map((text, i) => new TableCell({
           children: [new Paragraph({
+            keepNext: true,
             alignment: AlignmentType.CENTER,
             spacing: { line: 240 },
             children: [new TextRun({ text, size: 21, color: "000000", font: HFONT })],
@@ -73,10 +75,11 @@ function plainTable(headers, rows, widths) {
           width: { size: widths[i], type: WidthType.PERCENTAGE },
         })),
       }),
-      ...rows.map(cells => new TableRow({
+      ...rows.map((cells, r) => new TableRow({
         cantSplit: true,
         children: cells.map((text, i) => new TableCell({
           children: [new Paragraph({
+            keepNext: r < rows.length - 1,
             spacing: { line: 240 },
             children: [new TextRun({ text, size: 21, color: "000000", font: FONT })],
           })],
