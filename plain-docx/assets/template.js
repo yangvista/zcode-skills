@@ -10,11 +10,11 @@ const fs = require("fs");
 const FONT = { ascii: "Times New Roman", eastAsia: "SimSun" };   // 正文：小四宋体
 const HFONT = { ascii: "Times New Roman", eastAsia: "SimHei" };  // 标题：黑体
 
-// 章标题：三号黑体居中，单倍行距，段前段后各 0.5 行
+// 章标题：三号黑体居左，单倍行距，段前段后各 0.5 行
 function chapter(text) {
   return new Paragraph({
     heading: HeadingLevel.HEADING_1,
-    alignment: AlignmentType.CENTER,
+    alignment: AlignmentType.LEFT,
     spacing: { line: 240, before: 180, after: 180 },
     children: [new TextRun({ text, size: 32, color: "000000", font: HFONT })],
   });
